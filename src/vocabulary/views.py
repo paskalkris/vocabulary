@@ -7,12 +7,12 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 
 from .models import Thesaurus, ThesaurusVersion
-from .serializers import ThesaurusVersionSerializer, ThesaurusItemSerializer
+from .serializers import ThesaurusSerializer, ThesaurusItemSerializer
 from .service import ThesaurusService
 
 
 class ThesaurusAPIView(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ThesaurusVersionSerializer
+    serializer_class = ThesaurusSerializer
     thesaurus_service = ThesaurusService()
 
     def get_queryset(self):
@@ -39,16 +39,16 @@ class ThesaurusItemAPIView(viewsets.ReadOnlyModelViewSet):
     thesaurus_service = ThesaurusService()
 
     def get_queryset(self):
-        thesaurus_slug = self.kwargs["thesaurus"]
-        thesaurus_version_slug = self.kwargs.get("version")
+        thesaurus_id = self.kwargs["thesaurus"]
+        thesaurus_version_id = self.kwargs.get("version")
 
         code = self.request.query_params.get("code")
         value = self.request.query_params.get("value")
 
-        thesaurus = get_object_or_404(Thesaurus, slug=thesaurus_slug)
-        if thesaurus_version_slug:
+        thesaurus = get_object_or_404(Thesaurus, pk=thesaurus_id)
+        if thesaurus_version_id:
             thesaurus_version = get_object_or_404(
-                ThesaurusVersion, thesaurus=thesaurus, slug=thesaurus_version_slug
+                ThesaurusVersion, thesaurus=thesaurus, pk=thesaurus_version_id
             )
 
             if code or value:

@@ -1,6 +1,6 @@
 from datetime import date
 
-from django.db.models import Subquery, OuterRef
+from django.db.models import Subquery, OuterRef, Prefetch, Count
 from django.shortcuts import get_list_or_404
 
 from .models import Thesaurus, ThesaurusVersion, ThesaurusItem
@@ -11,20 +11,24 @@ class ThesaurusService:
         """
         Получение списка справочников.
         """
-        return ThesaurusVersion.objects.all()
+        return Thesaurus.objects.prefetch_related("versions")
 
     def get_thesaurus_list_actual_to(self, actual_to: date):
         """
         Получение списка справочников, актуальных на указанную дату
         """
-        self._validate_parameter_type(actual_to, "actual_to", date)
 
-        subquery = ThesaurusVersion.objects.filter(
-            thesaurus=OuterRef("thesaurus"), start_date__lte=actual_to
-        ).order_by("-start_date")
-        queryset = ThesaurusVersion.objects.filter(
-            start_date=Subquery(subquery.values("start_date")[:1])
+        thesaurus_version_prefetch = Prefetch(
+            "versions",
+            queryset=self._get_thesaurus_version_actual_to(actual_to),
         )
+
+        queryset = (
+            Thesaurus.objects.prefetch_related(thesaurus_version_prefetch)
+            .filter(versions__start_date__lte=actual_to)
+            .distinct()
+        )
+
         return queryset
 
     def get_thesaurus_current_version_elements(self, thesaurus: Thesaurus):
@@ -79,10 +83,23 @@ class ThesaurusService:
         self._validate_parameter_type(thesaurus, "thesaurus", Thesaurus)
 
         today = date.today()
-        thesaurus_current_version = self.get_thesaurus_list_actual_to(today).get(
+        thesaurus_current_version = self._get_thesaurus_version_actual_to(today).get(
             thesaurus=thesaurus
         )
         return thesaurus_current_version
+
+    def _get_thesaurus_version_actual_to(self, actual_to: date):
+        """
+        Получение версий справочников, актуальных на указанную дату
+        """
+        self._validate_parameter_type(actual_to, "actual_to", date)
+
+        subquery = ThesaurusVersion.objects.filter(
+            thesaurus=OuterRef("thesaurus"), start_date__lte=actual_to
+        ).order_by("-start_date")
+        return ThesaurusVersion.objects.filter(
+            start_date=Subquery(subquery.values("start_date")[:1])
+        )
 
     def _validate_parameter_type(self, parameter, parameter_name, expected_type):
         if type(parameter) is not expected_type:

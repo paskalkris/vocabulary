@@ -25,10 +25,10 @@ python manage.py runserver
 - получение списка справочников, актуальных на указанную дату: 
 ```http://127.0.0.1:8000/api/v1/thesaurus/?actual_to=2022-09-05```
 - получение элементов заданного справочника текущей версии: 
-```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/```
+```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/items/```
 - валидация элементов заданного справочника текущей версии (проверка на то, что элемент с указанным кодом и значением существует в указанной версии справочника.) (возможно отсутствие одного из параметров): 
-```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/?code=<code>&value=<value>```
+```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/items/?code=<code>&value=<value>```
 - получение элементов заданного справочника указанной версии: 
-```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/<thesaurus-version-slug>/```
+```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/<thesaurus-version-slug>/items/```
 - валидация элемента заданного справочника по указанной версии (возможно отсутствие одного из параметров): 
-```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/<thesaurus-version-slug>/?code=<code>&value=<value>```
+```http://127.0.0.1:8000/api/v1/thesaurus/<thesaurus-slug>/<thesaurus-version-slug>/items/?code=<code>&value=<value>```

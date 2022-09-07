@@ -22,12 +22,12 @@ from vocabulary.views import ThesaurusAPIView, ThesaurusItemAPIView
 router = routers.DefaultRouter()
 router.register("thesaurus", ThesaurusAPIView, basename="thesaurus")
 router.register(
-    r"thesaurus/(?P<thesaurus>[a-zA-Z0-9\-]+?)/items",
+    r"thesaurus/(?P<thesaurus>\d+?)/items",
     ThesaurusItemAPIView,
     basename="thesaurus-item",
 )
 router.register(
-    r"thesaurus/(?P<thesaurus>[a-zA-Z0-9\-]+?)/(?P<version>[a-zA-Z0-9\-]+?)/items",
+    r"thesaurus/(?P<thesaurus>\d+?)/(?P<version>\d+?)/items",
     ThesaurusItemAPIView,
     basename="thesaurus-version-item",
 )
